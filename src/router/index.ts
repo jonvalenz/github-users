@@ -1,15 +1,16 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
+import RouteNames from '@/constants/route-names';
+import DashBoard from '../views/Dashboard.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView,
+    name: RouteNames.DASHBOARD,
+    component: DashBoard,
   },
   {
-    path: '/about',
-    name: 'about',
+    path: '/user',
+    name: RouteNames.USER,
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
