@@ -1,10 +1,6 @@
 <template>
   <HomeHeader></HomeHeader>
-  <nav>
-    <router-link to="/">Home</router-link>
-    |
-    <router-link to="/user">About</router-link>
-  </nav>
+
   <router-view />
 </template>
 
@@ -38,4 +34,19 @@ nav a {
 nav a.router-link-exact-active {
   color: #42b983;
 }
+
+.v-enter-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+/* * {
+  outline: 2px;
+  outline-color: black;
+  outline-style: solid;
+} */
 </style>

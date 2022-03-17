@@ -1,4 +1,4 @@
-// apollo.config.js
+// TODO fix thi
 
 module.exports = {
   client: {
@@ -6,6 +6,10 @@ module.exports = {
       name: 'github-users',
       // URL to the GraphQL API
       url: 'https://api.github.com/graphql',
+      headers:{
+        ...headers,
+        authorization: authToken ? `Bearer ${authToken}` : ''
+      }
     },
 
     // Files processed by the extension
