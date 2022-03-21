@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 export const USERS_QUERY = gql`
   query getUsers($query: String!, $previousPageCursor: String, $nextPageCursor: String) {
     search(
-      first: 40
+      first: 30
       before: $previousPageCursor
       after: $nextPageCursor
       type: USER

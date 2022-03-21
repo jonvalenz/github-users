@@ -87,7 +87,10 @@
 import UserPreview from '@/components/user-preview.vue';
 import { defineComponent, inject, Ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { getPaginatedUsers } from '@/services/github';
+import getUsers from '@/services/github-users';
+import paginator from '@/modules/paginator';
+
+const paginate = paginator();
 
 export default defineComponent({
   name: 'DashBoard',
@@ -98,14 +101,8 @@ export default defineComponent({
     const router = useRouter();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const query = inject<Ref<string>>('query')!;
-
-    const {
-      loading,
-      refetch,
-      fetchMore,
-      fetchPrevious,
-      results: users,
-    } = getPaginatedUsers(query.value);
+    const { loading, refetch, fetchMoreItems, users: allUsers } = getUsers(' ');
+    const { next, previous, itemsToDisplay: users, isNextPageLoaded } = paginate(allUsers, 30);
 
     watch(query, () => {
       refetch(query.value);
@@ -117,17 +114,21 @@ export default defineComponent({
     }
 
     function nextPage() {
-      fetchMore();
+      if (isNextPageLoaded()) {
+        next();
+      } else {
+        fetchMoreItems()?.then(() => {
+          next();
+        });
+      }
     }
 
     function previousPage() {
-      fetchPrevious();
+      previous();
     }
 
     return { showUserPage, nextPage, previousPage, users, loading };
   },
 });
 </script>
-<style>
-
-</style>
+<style></style>

@@ -1,10 +1,10 @@
-<template lang="">
+<template>
   <div v-if="!loading" class="grid gap-4 grid-rows-8">
     <div class="row-span-3 ml-20 flex">
-      <img :src="user.avatarUrl" class="rounded-full h-44 w-44" alt="" />
+      <img :src="user!.avatarUrl" class="rounded-full h-44 w-44" alt="" />
 
       <div class="flex content-center justify-center flex-wrap ml-2">
-        <div class="text-xl">{{ user.name || user.login }}</div>
+        <div class="text-xl">{{ user!.name || user!.login }}</div>
       </div>
     </div>
     <div class="row-span-1">
@@ -14,7 +14,7 @@
     <div class="grid gap-4 grid-cols-12 row-span-4">
       <div class="col-span-1">
         <button
-          @click="fetchPrevious()"
+          @click="previousPage()"
           class="w-full h-full flex flex-wrap justify-center content-center"
         >
           <svg
@@ -34,7 +34,7 @@
           <div
             class="p-2 m-1 flex flex-wrap shadow-md grow-0"
             v-for="repository in repositories"
-            :key="repository.name"
+            :key="repository.id"
           >
             <div class="content">
               <div>{{ repository.name }}</div>
@@ -45,7 +45,7 @@
       </transition>
       <div class="col-span-1">
         <button
-          @click="fetchMore()"
+          @click="nextPage()"
           class="w-full h-full flex flex-wrap justify-center content-center"
         >
           <svg
@@ -65,18 +65,38 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { getPaginatedRepos } from '@/services/github';
-import { useRoute } from 'vue-router';
+import getRepos from '@/services/github-user-repos';
+import paginator from '@/modules/paginator';
+
+const paginate = paginator();
 
 export default defineComponent({
   name: 'UserProjects',
   setup() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const login = sessionStorage.getItem('userLogin')!;
+    const { repositories: allRepositories, fetchMoreItems, loading, user } = getRepos(login);
+    const {
+      next,
+      previous,
+      itemsToDisplay: repositories,
+      isNextPageLoaded,
+    } = paginate(allRepositories, 10);
 
-    const { repositories, fetchMore, fetchPrevious, loading, user } = getPaginatedRepos(login);
+    function nextPage() {
+      if (isNextPageLoaded()) {
+        next();
+      } else {
+        fetchMoreItems()?.then(() => {
+          next();
+        });
+      }
+    }
 
-    return { loading, user, repositories, fetchMore, fetchPrevious };
+    function previousPage() {
+      previous();
+    }
+    return { loading, user, repositories, nextPage, previousPage };
   },
 });
 </script>
